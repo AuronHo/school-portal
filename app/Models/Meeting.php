@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Meeting extends Model
+{
+    protected $fillable = [
+        'classroom_id',
+        'subject_id',
+        'week_number',
+        'topic',
+        'meeting_date'
+    ];
+
+    // Link back to the Class
+    public function classroom(): BelongsTo
+    {
+        return $this->belongsTo(Classroom::class);
+    }
+
+    // Link back to the Subject
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class);
+    }
+}
