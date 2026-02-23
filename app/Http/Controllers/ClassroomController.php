@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Classroom;
 use App\Models\Subject;
+use App\Models\Meeting;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
 
 class ClassroomController extends Controller
@@ -96,5 +98,41 @@ class ClassroomController extends Controller
 
         return redirect()->route('classrooms.subjects', $classroom->id)
                         ->with('success', 'Subject assigned and schedule generated!');
+    }
+
+    // roll call function
+    public function rollCall(Classroom $classroom, Subject $subject, Meeting $meeting)
+    {
+        // Security Check: Ensure this meeting actually belongs to this classroom and subject
+        if ($meeting->classroom_id !== $classroom->id || $meeting->subject_id !== $subject->id) {
+            abort(404);
+        }
+
+        // Get all students enrolled in this classroom
+        $students = $classroom->students;
+
+        // Fetch existing status to show what was previously saved
+        $attendanceRecords = Attendance::where('meeting_id', $meeting->id)
+                                    ->pluck('status', 'user_id');
+
+        return view('classrooms.roll-call', compact('classroom', 'subject', 'meeting', 'students', 'attendanceRecords'));
+    }
+
+    public function storeRollCall(Request $request, Meeting $meeting)
+    {
+        // Validate that we received an array of attendance data
+        $request->validate([
+            'attendance' => 'required|array',
+        ]);
+
+        foreach ($request->attendance as $studentId => $status) {
+            // This will update the record if it exists, or create a new one if it doesn't
+            Attendance::updateOrCreate(
+                ['meeting_id' => $meeting->id, 'user_id' => $studentId],
+                ['status' => $status]
+            );
+        }
+
+        return back()->with('success', 'Attendance has been saved successfully!');
     }
 }

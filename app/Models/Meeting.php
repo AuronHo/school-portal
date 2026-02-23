@@ -25,4 +25,8 @@ class Meeting extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+
+    protected $casts = [
+        'meeting_date' => 'datetime', // This enables the ->format() method
+    ];
 }
