@@ -10,4 +10,9 @@ class Subject extends Model
     {
         return $this->hasMany(Meeting::class);
     }
+
+    public function classrooms()
+    {
+        return $this->belongsToMany(Classroom::class)->withPivot('teacher_id');
+    }
 }

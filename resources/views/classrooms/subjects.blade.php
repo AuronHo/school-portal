@@ -5,11 +5,23 @@
             <span>/</span>
             <span class="text-gray-800 font-medium">{{ $classroom->name }}</span>
         </div>
+        
         <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
             {{ __('Select Subject') }}
         </h2>
-        <p class="text-gray-600">Choose a subject to manage meetings, attendance, and tasks.</p>
     </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            
+            <div class="flex justify-between items-center mb-6">
+                <p class="text-gray-600">Choose a subject to manage meetings, attendance, and tasks.</p>
+                
+                <a href="{{ route('classrooms.subjects.assign', $classroom->id) }}" 
+                   class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 shadow-sm transition">
+                    + Add New Subject
+                </a>
+            </div>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -38,7 +50,7 @@
 
                             <div class="mt-6 pt-6 border-t border-gray-50">
                                 <a href="{{ route('classrooms.meetings', [$classroom->id, $subject->id]) }}" 
-                                   class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 transition ease-in-out duration-150">
+                                class="w-full inline-flex justify-center items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 transition ease-in-out duration-150">
                                     Open Schedule
                                     <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>

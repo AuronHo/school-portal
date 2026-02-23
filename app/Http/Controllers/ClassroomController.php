@@ -13,8 +13,7 @@ class ClassroomController extends Controller
      */
     public function subjects(Classroom $classroom)
     {
-        // Fetch all subjects (or filter them if you have a specific curriculum)
-        $subjects = Subject::all();
+        $subjects = $classroom->subjects;
 
         return view('classrooms.subjects', compact('classroom', 'subjects'));
     }
@@ -61,5 +60,41 @@ class ClassroomController extends Controller
 
         $classroom->delete();
         return redirect()->route('dashboard')->with('success', 'Classroom deleted.');
+    }
+
+    public function assignSubject(Classroom $classroom)
+    {
+        // Get subjects that are NOT already linked to this classroom
+        $assignedSubjectIds = $classroom->subjects->pluck('id');
+        $availableSubjects = \App\Models\Subject::whereNotIn('id', $assignedSubjectIds)->get();
+
+        return view('classrooms.assign-subject', compact('classroom', 'availableSubjects'));
+    }
+
+    public function attachSubject(Request $request, Classroom $classroom)
+    {
+        $request->validate([
+            'subject_id' => 'required|exists:subjects,id',
+        ]);
+
+        // 1. Attach to Pivot Table
+        $classroom->subjects()->attach($request->subject_id, [
+            'teacher_id' => auth()->id()
+        ]);
+
+        // 2. Automatically generate the 14-week schedule for this new assignment
+        $subject = \App\Models\Subject::find($request->subject_id);
+        for ($i = 1; $i <= 14; $i++) {
+            \App\Models\Meeting::create([
+                'classroom_id' => $classroom->id,
+                'subject_id'   => $subject->id,
+                'week_number'  => $i,
+                'topic'        => "Week $i: " . $subject->name,
+                'meeting_date' => now()->addWeeks($i),
+            ]);
+        }
+
+        return redirect()->route('classrooms.subjects', $classroom->id)
+                        ->with('success', 'Subject assigned and schedule generated!');
     }
 }

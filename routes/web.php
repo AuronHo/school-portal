@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/classrooms/create', [ClassroomController::class, 'create'])->name('classrooms.create');
     Route::post('/classrooms', [ClassroomController::class, 'store'])->name('classrooms.store');
     Route::delete('/classrooms/{classroom}', [ClassroomController::class, 'destroy'])->name('classrooms.destroy');
+    Route::get('/classrooms/{classroom}/subjects/assign', [ClassroomController::class, 'assignSubject'])->name('classrooms.subjects.assign');
+    Route::post('/classrooms/{classroom}/subjects/attach', [ClassroomController::class, 'attachSubject'])->name('classrooms.subjects.attach');
 });
 
 require __DIR__.'/auth.php';

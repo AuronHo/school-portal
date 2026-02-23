@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use App\Models\Classroom;
 use App\Models\Subject;
+use App\Models\Meeting;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -53,14 +54,24 @@ class SchoolSeeder extends Seeder
         $allClassrooms = \App\Models\Classroom::all();
         $allSubjects = \App\Models\Subject::all();
 
-        foreach ($allClassrooms as $class) {
-            foreach ($allSubjects as $subject) {
+        // 6. Assign Subjects to Classrooms and Create Meetings
+        foreach ($classrooms as $class) {
+            // Randomly pick 3 subjects for this specific class
+            $randomSubjects = $subjects->random(3);
+            
+            foreach ($randomSubjects as $subject) {
+                // Step A: Link them in the pivot table (DO THIS FIRST)
+                $class->subjects()->attach($subject->id, [
+                    'teacher_id' => $class->teacher_id
+                ]);
+
+                // Step B: Create the 14-week schedule for this specific Class+Subject combo
                 for ($i = 1; $i <= 14; $i++) {
-                    \App\Models\Meeting::create([
+                    Meeting::create([
                         'classroom_id' => $class->id,
-                        'subject_id' => $subject->id,
-                        'week_number' => $i,
-                        'topic' => "Topic for Week $i",
+                        'subject_id'   => $subject->id,
+                        'week_number'  => $i,
+                        'topic'        => "Week $i: " . $subject->name,
                         'meeting_date' => now()->addWeeks($i),
                     ]);
                 }
