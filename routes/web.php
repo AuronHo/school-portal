@@ -36,6 +36,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/classrooms/{classroom}/subjects/attach', [ClassroomController::class, 'attachSubject'])->name('classrooms.subjects.attach');
     Route::post('/meetings/{meeting}/roll-call', [ClassroomController::class, 'storeRollCall'])->name('meetings.roll-call.store');
     Route::get('/classrooms/{classroom}/subjects/{subject}/meetings/{meeting}/roll-call', [ClassroomController::class, 'rollCall'])->name('meetings.roll-call');
+    Route::get('/classrooms/{classroom}/subjects/{subject}/meetings/{meeting}/tasks/create', [ClassroomController::class, 'createTask'])->name('meetings.tasks.create');
+    Route::post('/meetings/{meeting}/tasks', [ClassroomController::class, 'storeTask'])->name('meetings.tasks.store');
 });
 
 require __DIR__.'/auth.php';

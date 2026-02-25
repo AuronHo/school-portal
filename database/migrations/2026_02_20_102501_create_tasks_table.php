@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('subject_id')->constrained()->onDelete('cascade');
+            $table->foreignId('meeting_id')->constrained()->onDelete('cascade');
             $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
             $table->string('title');
             $table->text('description');
-            $table->dateTime('due_date');
+            $table->datetime('due_date');
+            $table->string('file_path')->nullable(); 
             $table->timestamps();
         });
     }

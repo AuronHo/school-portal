@@ -135,4 +135,49 @@ class ClassroomController extends Controller
 
         return back()->with('success', 'Attendance has been saved successfully!');
     }
+
+    public function createTask(Classroom $classroom, Subject $subject, Meeting $meeting)
+    {
+        return view('classrooms.create-task', compact('classroom', 'subject', 'meeting'));
+    }
+
+    public function storeTask(Request $request, Meeting $meeting)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required',
+            'due_date' => 'required|date|after:now',
+            'file' => 'nullable|mimes:pdf,doc,docx,zip|max:2048', // 2MB limit
+        ]);
+
+        $filePath = null;
+        if ($request->hasFile('file')) {
+            // Saves to storage/app/public/tasks
+            $filePath = $request->file('file')->store('tasks', 'public');
+        }
+
+        $meeting->tasks()->create([
+            'teacher_id' => auth()->id(),
+            'title' => $request->title,
+            'description' => $request->description,
+            'due_date' => $request->due_date,
+            'file_path' => $filePath,
+        ]);
+
+        return redirect()->route('classrooms.meetings', [$meeting->classroom_id, $meeting->subject_id])
+                        ->with('success', 'Task posted successfully!');
+    }
+
+    public function showMeetings(Classroom $classroom, Subject $subject)
+    {
+        $meetings = Meeting::where('classroom_id', $classroom->id)
+                        ->where('subject_id', $subject->id)
+                        ->with(['tasks' => function($query) {
+                            $query->withCount('submissions'); // This adds the 'submissions_count' variable
+                        }])
+                        ->orderBy('week_number')
+                        ->get();
+
+        return view('classrooms.meetings', compact('classroom', 'subject', 'meetings'));
+    }
 }

@@ -29,4 +29,9 @@ class Meeting extends Model
     protected $casts = [
         'meeting_date' => 'datetime', // This enables the ->format() method
     ];
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

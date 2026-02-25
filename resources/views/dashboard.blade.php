@@ -56,14 +56,10 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 mt-4">
+                <div class="grid grid-cols-1 gap-3 mt-4">
                     <a href="{{ route('classrooms.subjects', $class->id) }}" 
                     class="flex items-center justify-center px-4 py-2.5 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-blue-700 shadow-sm transition">
                         View Subjects
-                    </a>
-                    <a href="#" 
-                    class="flex items-center justify-center px-4 py-2.5 border border-gray-200 text-gray-700 text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-gray-50 transition">
-                        Post Task
                     </a>
                 </div>
             </div>
