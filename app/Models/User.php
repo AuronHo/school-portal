@@ -93,4 +93,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(TaskSubmission::class, 'student_id');
     }
+
+    public function classrooms()
+    {
+        return $this->belongsToMany(Classroom::class, 'classroom_user', 'user_id', 'classroom_id');
+    }
 }
