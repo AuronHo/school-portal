@@ -51,6 +51,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/student/classrooms/{classroom}/subjects', [DashboardController::class, 'studentSubjects'])->name('student.classrooms.subjects');
         Route::get('/student/classrooms/{classroom}/subjects/{subject}/meetings', [DashboardController::class, 'studentMeetings'])->name('student.classrooms.meetings');
     });
+
+    Route::post('/tasks/{task}/submit', [DashboardController::class, 'submitTask'])->name('tasks.submit');
 });
 
 require __DIR__.'/auth.php';

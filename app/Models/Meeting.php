@@ -34,4 +34,9 @@ class Meeting extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+    public function rollCalls()
+    {
+        return $this->hasMany(Attendance::class, 'meeting_id');
+    }
 }
