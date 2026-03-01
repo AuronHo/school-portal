@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -53,6 +54,10 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::post('/tasks/{task}/submit', [DashboardController::class, 'submitTask'])->name('tasks.submit');
+
+    // admin
+    Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
+    Route::patch('/admin/users/{user}/toggle-role', [AdminController::class, 'toggleRole'])->name('admin.users.toggle');
 });
 
 require __DIR__.'/auth.php';

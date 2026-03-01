@@ -27,6 +27,11 @@ class DashboardController extends Controller
             $classrooms = collect();
         }
 
+        // admin
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.users');
+        }
+
         return view('students.dashboard', compact('classrooms'));
     }
 
@@ -60,7 +65,7 @@ class DashboardController extends Controller
         return view('students.meetings', compact('classroom', 'subject', 'meetings'));
     }
 
- public function submitTask(Request $request, Task $task)
+    public function submitTask(Request $request, Task $task)
     {
         $request->validate([
             'file' => 'required|mimes:pdf,doc,docx,zip|max:5120',
@@ -80,4 +85,5 @@ class DashboardController extends Controller
 
         return back()->with('status', $message);
     }
+
 }
