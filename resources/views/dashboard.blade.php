@@ -8,6 +8,41 @@
     <div class="p-6 text-gray-900">
     <h2 class="text-2xl font-bold mb-6">Teacher Control Center</h2>
 
+    @if(isset($notifications) && count($notifications) > 0)
+        <div class="mb-10 max-w-7xl">
+            <h3 class="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4 flex items-center">
+                <span class="relative flex h-2 w-2 mr-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                Classroom Management Alerts
+            </h3>
+            <div class="space-y-3">
+                @foreach($notifications as $note)
+                    <div class="bg-white border border-gray-100 p-4 rounded-2xl shadow-sm flex items-start space-x-4">
+                        {{-- Dynamic Icon Container --}}
+                        <div class="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center 
+                            {{ $note['color'] == 'blue' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600' }}">
+                            
+                            @if($note['type'] == 'task')
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                            @else
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                            @endif
+                        </div>
+
+                        <div class="flex-1">
+                            <p class="text-[10px] font-black uppercase tracking-widest {{ $note['color'] == 'blue' ? 'text-blue-500' : 'text-amber-600' }}">
+                                {{ $note['title'] }}
+                            </p>
+                            <p class="text-sm font-bold text-gray-800 mt-0.5">{{ $note['message'] }}</p>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <!-- CRUD button -->
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-lg font-medium text-gray-900">Your Managed Classes</h3>
