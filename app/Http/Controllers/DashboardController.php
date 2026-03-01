@@ -15,8 +15,14 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        // admin
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.users');
+        }
+
+        // teacher
         if ($user->isTeacher()) {
-            $classrooms = Classroom::all(); 
+            $classrooms = Classroom::where('teacher_id', $user->id)->get();
             return view('dashboard', compact('classrooms'));
         }
 
@@ -25,11 +31,6 @@ class DashboardController extends Controller
 
         if (!$classrooms) {
             $classrooms = collect();
-        }
-
-        // admin
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.users');
         }
 
         return view('students.dashboard', compact('classrooms'));
