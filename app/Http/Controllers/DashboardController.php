@@ -33,7 +33,17 @@ class DashboardController extends Controller
             $classrooms = collect();
         }
 
+        $hasJoinedClass = $classrooms->count() > 0;
+
         return view('students.dashboard', compact('classrooms'));
+    }
+
+    public function unenroll(Classroom $classroom)
+    {
+        // Detach the user from this specific classroom
+        auth()->user()->classrooms()->detach($classroom->id);
+
+        return redirect()->route('dashboard')->with('status', 'You have successfully left the classroom.');
     }
 
     public function studentSubjects(Classroom $classroom)
@@ -85,6 +95,26 @@ class DashboardController extends Controller
         $message = $isUpdate ? 'Submission updated successfully!' : 'Assignment submitted successfully!';
 
         return back()->with('status', $message);
+    }
+
+    public function enrollIndex()
+    {
+        // Get all classrooms that the student IS NOT already enrolled in
+        $availableClassrooms = Classroom::whereDoesntHave('students', function($query) {
+            $query->where('user_id', auth()->id());
+        })->with('teacher')->get();
+
+        return view('students.enroll', compact('availableClassrooms'));
+    }
+
+    public function enrollStore(Classroom $classroom)
+    {
+        $user = auth()->user();
+
+        // Attach the student to the classroom in the pivot table
+        $user->classrooms()->attach($classroom->id);
+
+        return redirect()->route('dashboard')->with('status', "Successfully enrolled in {$classroom->name}!");
     }
 
 }

@@ -58,6 +58,15 @@ Route::middleware('auth')->group(function () {
     // admin
     Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
     Route::patch('/admin/users/{user}/toggle-role', [AdminController::class, 'toggleRole'])->name('admin.users.toggle');
+
+    // Page to see available classes
+    Route::get('/enroll', [DashboardController::class, 'enrollIndex'])->name('student.enroll.index');
+
+    // The action to actually join a class
+    Route::post('/classrooms/{classroom}/enroll', [DashboardController::class, 'enrollStore'])->name('student.enroll.store');
+
+    // to unenroll
+    Route::post('/classrooms/{classroom}/unenroll', [DashboardController::class, 'unenroll'])->name('student.unenroll');
 });
 
 require __DIR__.'/auth.php';
