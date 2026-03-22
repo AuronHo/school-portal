@@ -55,9 +55,18 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/tasks/{task}/submit', [DashboardController::class, 'submitTask'])->name('tasks.submit');
 
-    // admin
-    Route::get('/admin/users', [AdminController::class, 'index'])->name('admin.users');
-    Route::patch('/admin/users/{user}/toggle-role', [AdminController::class, 'toggleRole'])->name('admin.users.toggle');
+   Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+        // User Management
+        Route::get('/users', [AdminController::class, 'index'])->name('users');
+        Route::patch('/users/{user}/toggle-role', [AdminController::class, 'toggleRole'])->name('users.toggle');
+        
+        // Subject Management
+        Route::get('/subjects', [AdminController::class, 'subjects'])->name('subjects');
+        Route::post('/subjects', [AdminController::class, 'storeSubject'])->name('subjects.store');
+        
+        // NEW: The Delete Route goes right here!
+        Route::delete('/subjects/{subject}', [AdminController::class, 'destroySubject'])->name('subjects.destroy');
+    });
 
     // Page to see available classes
     Route::get('/enroll', [DashboardController::class, 'enrollIndex'])->name('student.enroll.index');
@@ -67,6 +76,8 @@ Route::middleware('auth')->group(function () {
 
     // to unenroll
     Route::post('/classrooms/{classroom}/unenroll', [DashboardController::class, 'unenroll'])->name('student.unenroll');
+
+
 });
 
 require __DIR__.'/auth.php';
