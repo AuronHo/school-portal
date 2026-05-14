@@ -46,6 +46,23 @@
             "npm install",
             "npm run build"
         ],
+        "deploy:first": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan key:generate --ansi",
+            "@php artisan migrate --force --ansi",
+            "@php artisan storage:link --ansi",
+            "@php artisan config:cache --ansi",
+            "@php artisan route:cache --ansi",
+            "@php artisan view:cache --ansi"
+        ],
+        "deploy": [
+            "composer install --no-dev --optimize-autoloader",
+            "@php artisan migrate --force --ansi",
+            "@php artisan config:cache --ansi",
+            "@php artisan route:cache --ansi",
+            "@php artisan view:cache --ansi"
+        ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"

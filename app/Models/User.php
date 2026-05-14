@@ -50,7 +50,12 @@ class User extends Authenticatable
         ];
     }
 
-    // Role check 
+    // Role check
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
     public function isTeacher(): bool
     {
         return $this->role === 'teacher';

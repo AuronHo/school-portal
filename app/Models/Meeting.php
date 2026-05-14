@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Meeting extends Model
 {
@@ -30,12 +32,12 @@ class Meeting extends Model
         'meeting_date' => 'datetime', // This enables the ->format() method
     ];
 
-    public function tasks()
+    public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
-    public function rollCalls()
+    public function rollCalls(): HasMany
     {
         return $this->hasMany(Attendance::class, 'meeting_id');
     }

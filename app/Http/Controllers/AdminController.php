@@ -10,28 +10,16 @@ class AdminController extends Controller
 {
     public function index()
     {
-        // Simple security check: if not admin, go back
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $users = User::where('id', '!=', auth()->id())->get(); // Get everyone except yourself
+        $users = User::where('id', '!=', auth()->id())->get();
         return view('admin.users', compact('users'));
     }
 
     public function toggleRole(User $user)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403);
-        }
-
-        // Smart Toggle logic
         if ($user->role === 'teacher') {
             $user->role = 'student';
-            $message = "{$user->name} has been demoted to Student.";
         } else {
             $user->role = 'teacher';
-            $message = "{$user->name} has been promoted to Teacher.";
         }
 
         $user->save();
@@ -41,32 +29,21 @@ class AdminController extends Controller
 
     public function subjects()
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Unauthorized action.');
-        }
-
-        // Fetch all subjects to display in the table
         $subjects = Subject::orderBy('name', 'asc')->get();
         return view('admin.subjects', compact('subjects'));
     }
 
     public function storeSubject(Request $request)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403);
-        }
-
-        // Validate the input
         $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:subjects,code', // Ensures no duplicate codes like MATH101
+            'code' => 'required|string|max:50|unique:subjects,code',
             'description' => 'nullable|string'
         ]);
 
-        // Save to database
         Subject::create([
             'name' => $request->name,
-            'code' => strtoupper($request->code), // Auto-capitalize the code
+            'code' => strtoupper($request->code),
             'description' => $request->description,
         ]);
 
@@ -75,15 +52,7 @@ class AdminController extends Controller
 
     public function destroySubject(Subject $subject)
     {
-        // Security check
-        if (auth()->user()->role !== 'admin') {
-            abort(403);
-        }
-
-        // Save the name temporarily so we can show it in the success message
-        $subjectName = $subject->name; 
-        
-        // Delete it from the database
+        $subjectName = $subject->name;
         $subject->delete();
 
         return back()->with('status', "Subject '{$subjectName}' has been successfully deleted.");

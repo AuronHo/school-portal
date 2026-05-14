@@ -9,9 +9,9 @@ class Attendance extends Model
 {
     protected $guarded = [];
 
-    public function student(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'student_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
 

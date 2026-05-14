@@ -168,16 +168,4 @@ class ClassroomController extends Controller
                         ->with('success', 'Task posted successfully!');
     }
 
-    public function showMeetings(Classroom $classroom, Subject $subject)
-    {
-        $meetings = Meeting::where('classroom_id', $classroom->id)
-                        ->where('subject_id', $subject->id)
-                        ->with(['tasks' => function($query) {
-                            $query->withCount('submissions'); // This adds the 'submissions_count' variable
-                        }])
-                        ->orderBy('week_number')
-                        ->get();
-
-        return view('classrooms.meetings', compact('classroom', 'subject', 'meetings'));
-    }
 }

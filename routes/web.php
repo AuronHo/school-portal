@@ -9,26 +9,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    $user = auth()->user();
-    
-    if ($user->isTeacher()) {
-        $data = [
-            'classrooms' => \App\Models\Classroom::all(), 
-            'total_tasks' => \App\Models\Task::where('teacher_id', $user->id)->count(),
-        ];
-        return view('dashboard', $data);
-    } 
-
-    // Logic for Students
-    $data = [
-        'classrooms' => $user->classrooms, 
-        'my_submissions' => \App\Models\TaskSubmission::where('student_id', $user->id)->count(),
-    ];
-    return view('student.dashboard', $data);
-
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
@@ -55,16 +35,11 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/tasks/{task}/submit', [DashboardController::class, 'submitTask'])->name('tasks.submit');
 
-   Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-        // User Management
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/users', [AdminController::class, 'index'])->name('users');
         Route::patch('/users/{user}/toggle-role', [AdminController::class, 'toggleRole'])->name('users.toggle');
-        
-        // Subject Management
         Route::get('/subjects', [AdminController::class, 'subjects'])->name('subjects');
         Route::post('/subjects', [AdminController::class, 'storeSubject'])->name('subjects.store');
-        
-        // NEW: The Delete Route goes right here!
         Route::delete('/subjects/{subject}', [AdminController::class, 'destroySubject'])->name('subjects.destroy');
     });
 
