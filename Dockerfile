@@ -32,6 +32,9 @@ RUN docker-php-ext-install \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Allow Composer to run as root inside Docker (safe in containers)
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 # Set working directory
 WORKDIR /var/www/html
 
@@ -39,7 +42,12 @@ WORKDIR /var/www/html
 COPY composer.json composer.lock ./
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+RUN composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-scripts \
+    --no-interaction \
+    --prefer-dist
 
 # Copy package files
 COPY package.json package-lock.json ./
@@ -51,7 +59,7 @@ RUN npm ci && npm run build
 COPY . .
 
 # Run composer scripts after full copy
-RUN composer run-script post-autoload-dump || true
+RUN composer dump-autoload --optimize --no-interaction
 
 # Create SQLite database directory and file
 RUN mkdir -p /var/www/html/database \
