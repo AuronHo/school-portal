@@ -32,16 +32,14 @@ RUN docker-php-ext-install \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Allow Composer to run as root inside Docker (safe in containers)
+# Allow Composer to run as root inside Docker
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first (for caching)
+# 1. Copy and install PHP dependencies (highly cached layer)
 COPY composer.json composer.lock ./
-
-# Install PHP dependencies
 RUN composer install \
     --no-dev \
     --optimize-autoloader \
@@ -49,16 +47,17 @@ RUN composer install \
     --no-interaction \
     --prefer-dist
 
-# Copy package files
+# 2. Copy and install Node dependencies (highly cached layer)
 COPY package.json package-lock.json ./
+RUN npm ci
 
-# Install Node dependencies and build assets
-RUN npm ci && npm run build
-
-# Copy the rest of the application
+# 3. Copy the rest of your application code into the container
 COPY . .
 
-# Run composer scripts after full copy
+# 4. Now that your files (vite.config.js, resources/) exist, compile assets
+RUN npm run build
+
+# 5. Optimize Composer autoload files
 RUN composer dump-autoload --optimize --no-interaction
 
 # Create SQLite database directory and file
@@ -71,13 +70,9 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/bootstrap/cache \
     && chmod 664 /var/www/html/database/database.sqlite
 
-# Copy nginx config
+# Copy configs
 COPY docker/nginx.conf /etc/nginx/nginx.conf
-
-# Copy supervisor config
 COPY docker/supervisord.conf /etc/supervisord.conf
-
-# Copy entrypoint script
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
