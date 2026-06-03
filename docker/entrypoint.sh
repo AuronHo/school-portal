@@ -18,9 +18,12 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Run database migrations
-echo "==> Running migrations..."
-php artisan migrate --force
+# # Run database migrations
+# echo "==> Running migrations..."
+# php artisan migrate --force
+
+echo "Wiping and running fresh migrations..."
+php artisan migrate:fresh --force
 
 # Make sure storage is linked
 echo "==> Linking storage..."
