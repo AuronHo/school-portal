@@ -21,6 +21,7 @@ RUN apk add --no-cache \
 # Install PHP extensions
 RUN docker-php-ext-install \
     pdo \
+    pdo_mysql \
     pdo_sqlite \
     mbstring \
     exif \
