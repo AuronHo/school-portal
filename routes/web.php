@@ -24,6 +24,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/classrooms/{classroom}/subjects/{subject}/meetings/{meeting}/roll-call', [ClassroomController::class, 'rollCall'])->name('meetings.roll-call');
     Route::get('/classrooms/{classroom}/subjects/{subject}/meetings/{meeting}/tasks/create', [ClassroomController::class, 'createTask'])->name('meetings.tasks.create');
     Route::post('/meetings/{meeting}/tasks', [ClassroomController::class, 'storeTask'])->name('meetings.tasks.store');
+    Route::delete('/tasks/{task}', [ClassroomController::class, 'destroyTask'])->name('tasks.destroy');
+    Route::get('/tasks/{task}/submissions', [ClassroomController::class, 'taskSubmissions'])->name('tasks.submissions');
 
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

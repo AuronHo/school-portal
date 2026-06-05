@@ -10,8 +10,6 @@ RUN apk add --no-cache \
     zip \
     unzip \
     git \
-    sqlite \
-    sqlite-dev \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
@@ -22,7 +20,6 @@ RUN apk add --no-cache \
 RUN docker-php-ext-install \
     pdo \
     pdo_mysql \
-    pdo_sqlite \
     mbstring \
     exif \
     pcntl \
@@ -61,15 +58,10 @@ RUN npm run build
 # 5. Optimize Composer autoload files
 RUN composer dump-autoload --optimize --no-interaction
 
-# Create SQLite database directory and file
-RUN mkdir -p /var/www/html/database \
-    && touch /var/www/html/database/database.sqlite
-
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache \
-    && chmod 664 /var/www/html/database/database.sqlite
+    && chmod -R 755 /var/www/html/bootstrap/cache
 
 # Copy configs
 COPY docker/nginx.conf /etc/nginx/nginx.conf

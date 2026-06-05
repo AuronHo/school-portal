@@ -6,7 +6,9 @@ use App\Models\Classroom;
 use App\Models\Subject;
 use App\Models\Meeting;
 use App\Models\Attendance;
+use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ClassroomController extends Controller
 {
@@ -166,6 +168,42 @@ class ClassroomController extends Controller
 
         return redirect()->route('classrooms.meetings', [$meeting->classroom_id, $meeting->subject_id])
                         ->with('success', 'Task posted successfully!');
+    }
+
+    public function destroyTask(Task $task)
+    {
+        if ($task->teacher_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($task->file_path) {
+            Storage::disk('public')->delete($task->file_path);
+        }
+
+        $meeting = $task->meeting;
+        $task->delete();
+
+        return redirect()->route('classrooms.meetings', [$meeting->classroom_id, $meeting->subject_id])
+                        ->with('success', 'Task deleted successfully.');
+    }
+
+    public function taskSubmissions(Task $task)
+    {
+        $meeting = $task->meeting;
+        $classroom = $meeting->classroom;
+        $subject = $meeting->subject;
+
+        if ($classroom->teacher_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $students = $classroom->students;
+        $submissions = $task->submissions()->with('student')->get();
+        $submittedStudentIds = $submissions->pluck('student_id')->toArray();
+
+        return view('classrooms.task-submissions', compact(
+            'task', 'meeting', 'classroom', 'subject', 'students', 'submissions', 'submittedStudentIds'
+        ));
     }
 
 }

@@ -22,7 +22,7 @@ class DashboardController extends Controller
 
         // teacher
         if ($user->isTeacher()) {
-            $classrooms = Classroom::where('teacher_id', $user->id)->get();
+            $classrooms = Classroom::where('teacher_id', $user->id)->withCount('students')->get();
             $notifications = $this->getTeacherNotifications($user, $classrooms);
             return view('dashboard', compact('classrooms', 'notifications'));
         }
